@@ -26,7 +26,7 @@ In such cases you will need to:
 
 - Delete all the entries from the SQLite database. 
 - Label each hold on your climbing wall (I recommend labelling each row and each column, holds are then identified through this paring e.g. the hold on row A, column 2 is A2)
-- Modify the 'allowed_strings' and 'mapper' variables to link each LED to the corresponding hold on your climbing wall. This should be done in the 'routes.py', 'addRoutes.py' and 'addRoutes2.py' files. 
+- Modify the 'allowed_strings' and 'mapper' variables to link each LED to the corresponding hold on your climbing wall. This should be done in the 'climb.py', 'addRoutes.py' and 'addSymetricalRoutes.py' files. 
 
 ## Author
 
