@@ -5,7 +5,9 @@ Use LEDs to create custom routes up a climbing wall. This code runs on a Raspber
 - addRoutes.py lets you create routes and stores them into the database
 - addSymetricalRoutes.py is for people who have a symetrical 'systems board' climbing wall. For each route created, a secondary symetrical route is generated and stored into the database.  
 
-## See it in action
+## Demonstration
+
+You can see the system in action in this YouTube demo:
 
 [![LED climbing wall demonstration](https://img.youtube.com/vi/_OsM3mQc0_Y/0.jpg)](https://www.youtube.com/watch?v=_OsM3mQc0_Y)
 
