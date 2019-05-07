@@ -36,7 +36,7 @@ In such cases you will need to:
 
 ## Author
 
-Colin Bone Dodds (https://github.com/ColinBD)
+**Colin Bone Dodds**   email: colinbonedodds@gmail.com   github: https://github.com/ColinBD
 
 ## License
 
