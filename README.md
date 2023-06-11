@@ -6,7 +6,8 @@ Use LEDs to create custom routes up a climbing wall. This code runs on a Raspber
 - addSymetricalRoutes.py is for people who have a symetrical 'systems board' climbing wall. For each route created, a secondary symetrical route is generated and stored into the database. 
 
 As of 2023 these scripts no longer work. They will soon be replaced by the following scripts:
-- setRoute.py - lets you turn pixels on/off, set their color, add a climbing grade and save the route to a database.
+- led_test.py
+- set_route.py - lets you turn pixels on/off, set their color, add a climbing grade and save the route to a database.
 - circuit.py - you choose a grade range, the number of climbs you want to do, whether you want to do symetrical versions, and then the routes will be presented with a key press moving to the next route.
 
 ## Demonstration
