@@ -4,7 +4,6 @@ Use LEDs to create custom routes up a climbing wall. This code runs on a Raspber
 - climb.py is used to generate a workout by picking routes at random from the database. 
 - addRoutes.py lets you create routes and stores them into the database
 - addSymetricalRoutes.py is for people who have a symetrical 'systems board' climbing wall. For each route created, a secondary symetrical route is generated and stored into the database. 
-- remove
 
 As of 2023 these scripts no longer work. They will soon be replaced by the following scripts:
 - led_test.py - cycles through red, green, blue for each pixel so you can check they are all working properly
