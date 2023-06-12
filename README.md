@@ -40,9 +40,9 @@ Update and install neccessary packages:
     sudo pip install adafruit-ws2801
 
 ## Connecting the LEDS
-You need to connect the LEDs to the GPIO pins on your Pi. Ensure your Pi is switched off when making these connections.
+You need to connect the LEDs to the GPIO pins on your Pi. Ensure your Pi is turned off when making these connections.
 
-Note: Your Pi may not be able to supply enough current so you might need to connect the 5V wire on your LEDs to an alternative  power supply if the supply from GPIO pin 2 proves insufficient.
+Note: Your Pi may not be able to supply enough current via GPIO pin 2 so you might need to connect the 5V wire on your LEDs to an alternative power supply.
 
 | **GPIO pin**  | **LED connection** |
 |---------------|--------------------|
@@ -55,7 +55,7 @@ Note: Your Pi may not be able to supply enough current so you might need to conn
 
 ## Test the LEDs
 
-With the lights connected and the Pi setup and powered on, you can now test the lights by opening a terminal and running:
+With the lights connected and the Pi setup and powered on, you can now test the lights by opening a terminal, navigating to the LED_climbing_wall directory and running:
 
     python led_check.py
 
