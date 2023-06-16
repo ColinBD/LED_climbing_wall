@@ -1,4 +1,4 @@
-import time
+import time, sqlite3
 import RPi.GPIO as GPIO
 
 # Import the WS2801 module.
@@ -102,13 +102,40 @@ def appear_from_back(pixels, color=(255, 0, 0)):
             pixels.show()
             time.sleep(0.02)
 
+def save_to_db():
+        print('the save to db routine')
+        #only save routes with >= 2 holds lit (e.g. a dyno route could be two holds)
+        if len(lights_list) > 1:
+            grade = raw_input('What is the v grade of the route? (just enter the number)')
+            conn = sqlite3.connect("routesDB.db")
+            cursor = conn.cursor()
+            string = prep_string()
+            print('\nthis is lights string: ' + string)
+            cursor.execute('''INSERT INTO routes(route, grade, complete_count, fail_count)
+                      VALUES(?,?,?,?)''', (string,grade,0,0))
+            conn.commit()
+
+def prep_string():
+        i=0
+        my_string = ''
+        for i in lights_list:
+            my_string = my_string + i + ';' 
+        # while i < (len(lights_list) - 1):
+        #         #get the content from lights list and add it to the string var with a comma
+        #         my_string = my_string + lights_list[i] + ';'
+        #         print(my_string)
+        #         i = i + 1
+        print(my_string)
+        raw_input('consider my_string then press ENTER to continue')
+        return my_string
+
 if __name__ == "__main__":
     # Clear all the pixels to turn them off.
     pixels.clear()
     pixels.show()  # Make sure to call show() after changing any pixels!
 
     while True:
-        s = raw_input('Which LED would you like to set? Enter pixel number, then comma, then color (choices of red, green, blue, off. E.g. "a6,red". ')
+        s = raw_input('To turn an LED on or off enter the LED indentifier, then comma, then color (choices of red, green, blue, off) E.g. "a6,red".\nTo save route to the database press "s" then ENTER.\nTo exit without saving press "e" then ENTER.\n')
         current_pix = s.split(',')
         if len(current_pix) == 2:
             if current_pix[0] in allowed_strings:
@@ -123,6 +150,19 @@ if __name__ == "__main__":
                     for x in lights_list:
                         if x.position == current_pix[0]:
                             lights_list.remove(x)
-                    setAll(lights_list)         
+                    setAll(lights_list)
+        elif current_pix[0] == 'e':
+            pixels.clear()
+            pixels.show()  # Make sure to call show() after changing any pixels!
+            #exit the application
+            quit()
+        elif current_pix[0] == 's': 
+            #save the route to the database
+            save_to_db()
+            pixels.clear()
+            pixels.show()  # Make sure to call show() after changing any pixels!
+            #then quit
+            raw_input('The route was saved to the database. Press the ENTER key to quit the applicaiton.')
+            quit()
         else:
-            print('I do not understand that colour, so I cannot set that pixel.')
+            print("I don't understand that command, so I can't set that an LED, save to the database or quit the application. Please try again.")

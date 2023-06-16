@@ -6,6 +6,7 @@ Use LEDs to create custom routes up a climbing wall. This code runs on a Raspber
 New, working scripts are:
 - led_test.py - cycles through red, green, blue for each pixel so you can check they are all working properly
 - create_mapping.py - use this to create the mapper dictionary needed for set_route.py. This assumes you have labelled the holds on your wall (I recommend using a grid system with letters on the X axis and numbers on the Y axis, but this is not essential), and an LED is placed below each hold. The script will step through the LED string and ask you which hold you see lit up. You input the label for each hold e.g. 'a6' or 'none' and once all LEDs have been illuminated the mapper dictionary is printed to screen which you should copy and paste into set_route.py, replacing the default mapper dictionary. 
+- setup_database.py - creates an SQLite database table ready for the other scripts to write to and read from.
 
 The following scripts are being worked on and are not fully functional:
 - set_route.py - will let you turn pixels on/off, set their color, add a climbing grade and save the route to a database. Currently, LEDs can be set but not saved to the database.
@@ -43,6 +44,7 @@ Update and install neccessary packages:
     sudo apt-get update
     sudo apt-get install python-pip -y
     sudo pip install adafruit-ws2801
+    sudo apt install sqlite3
 
 ## Connecting the LEDS
 You need to connect the LEDs to the GPIO pins on your Pi. Ensure your Pi is turned off when making these connections.
@@ -68,11 +70,24 @@ You should see each pixel ligh in turn, and this will cycle through red, green t
 
 ## Add an SQLite database
 
-This will store the routes
+You will have downloaded an SQLite database within the repository (routesDB.db). Type:
 
-- [An SQLight database](http://raspberrywebserver.com/sql-databases/set-up-an-sqlite-database-on-a-raspberry-pi.html)
+    sqlite3
 
-Next, you should download this repo onto your Pi and try running climb.py.
+...and you will enter a command line for this database. Prefix all commands with a dot (.). '.quit' exits the applicaiton, and a good place to start is '.help'.
+
+You will need to create a table that will be used to store the routes. Run the following code from the SQLite command line. 
+
+    CREATE TABLE routes(id INTEGER PRIMARY KEY AUTOINCREMENT, route TEXT, grade INTEGER, authored DATETIME, complete_count INTEGER, fail_count INTEGER);
+
+Then you need to use '.save routesDB.db' to make this persist.
+
+You don't need to interact further with the database as all reads/writes will be handled by the scripts, however, if you need to check the contents of the database (e.g. for debugging) you can use:
+
+    sqlite3 /* to open the command line */
+    .open routesDB.db /* to open the database file */
+    .tables /* you should see 'routes' assuming you created the table correctly in the step above */
+    SELECT * from routes; /* If you have used set_route.py and saved one or more routes, you should see an output like lines like "1|a1,blue;a3,red;a6,green;|1||0|0" */
 
 ## Configuring for your climbing wall environment
 
