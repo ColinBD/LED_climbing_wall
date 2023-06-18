@@ -103,14 +103,12 @@ def appear_from_back(pixels, color=(255, 0, 0)):
             time.sleep(0.02)
 
 def save_to_db():
-        print('the save to db routine')
         #only save routes with >= 2 holds lit (e.g. a dyno route could be two holds)
         if len(lights_list) > 1:
             grade = raw_input('What is the v grade of the route? (just enter the number)')
             conn = sqlite3.connect("routesDB.db")
             cursor = conn.cursor()
             string = prep_string()
-            print('\nthis is lights string: ' + string)
             cursor.execute('''INSERT INTO routes(route, grade, complete_count, fail_count)
                       VALUES(?,?,?,?)''', (string,grade,0,0))
             conn.commit()
@@ -119,14 +117,7 @@ def prep_string():
         i=0
         my_string = ''
         for i in lights_list:
-            my_string = my_string + i + ';' 
-        # while i < (len(lights_list) - 1):
-        #         #get the content from lights list and add it to the string var with a comma
-        #         my_string = my_string + lights_list[i] + ';'
-        #         print(my_string)
-        #         i = i + 1
-        print(my_string)
-        raw_input('consider my_string then press ENTER to continue')
+            my_string = my_string + i.position + ',' + i.colour + ';' 
         return my_string
 
 if __name__ == "__main__":
@@ -165,4 +156,4 @@ if __name__ == "__main__":
             raw_input('The route was saved to the database. Press the ENTER key to quit the applicaiton.')
             quit()
         else:
-            print("I don't understand that command, so I can't set that an LED, save to the database or quit the application. Please try again.")
+            raw_input("I don't understand that command, so I can't set that LED, save to the database or quit the application. Please press ENTER then try again.")
