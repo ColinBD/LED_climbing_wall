@@ -1,7 +1,7 @@
 # LED climbing wall
 
 Use LEDs to create custom routes up a climbing wall. This code runs on a Raspberry Pi 3 connected to a chain of WS2801 LEDs. Three deprecated scripts are currently included: 
-- climb.py, addRoutes.py, addSymetricalRoutes.py
+- climb.py, addSymetricalRoutes.py
 
 New, working scripts are:
 - led_test.py - cycles through red, green, blue for each pixel so you can check they are all working properly
