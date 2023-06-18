@@ -11,6 +11,9 @@ PIXEL_COUNT = 32
 
 # create a lights list which we can store our lights in
 lights_list = []
+#set up required variable
+current_route_num = 1
+route_set = []
 
 # Helpers
 red = 'red'
@@ -56,6 +59,9 @@ class Led:
   def __init__(self, position, colour):
     self.position = position
     self.colour = colour
+
+
+# ------- functions ----------------
 
 def set(light, color):
     #transform the wall LED identifier (e.g. a6) into the string identifier (e.g. 18)
@@ -103,14 +109,26 @@ def appear_from_back(pixels, color=(255, 0, 0)):
             time.sleep(0.02)
 
 def read_from_db():
+        routes = []
         print('the read from db routine')
-        # cursor.execute('''INSERT INTO routes(route, grade, complete_count, fail_count)
-                    #   VALUES(?,?,?,?)''', (string,grade,0,0))
-        # conn.commit()
-        # check how many routes we have
-            # if none, give a sorry message to the user
-            # if > none but not enough to satisfy the quantity the user wanted, give them these numbers then present as many as possible
-            # if all criteria met, output output 'retreived X routes from a potential pool of Y routes. Press any key to continue to load the first route.' 
+        conn = sqlite3.connect('routesDB.db')
+        cursor = conn.cursor()
+        sql = "SELECT aroute FROM routes WHERE grade BETWEEN " + low_grade + " AND " + high_grade
+        i=0
+        for row in cursor.execute(sql):
+                #print row
+                routes.append(row)
+                i = i+1
+        conn.close()
+        return routes
+
+# ensure low grade is not higher than high grade
+def grade_check():
+        if int(high_grade) < int(low_grade):
+                print ("high/low grade mismatch... you'll have to start again!... exiting program...")
+                time.sleep(2)
+                exit()
+        return
 
 def parse_string():
         i=0
@@ -126,40 +144,33 @@ def parse_string():
         raw_input('consider my_string then press ENTER to continue')
         return my_string
 
+
 if __name__ == "__main__":
     # Clear all the pixels to turn them off.
     pixels.clear()
     pixels.show()  # Make sure to call show() after changing any pixels!
 
-    while True:
-        s = raw_input('To turn an LED on or off enter the LED indentifier, then comma, then color (choices of red, green, blue, off) E.g. "a6,red".\nTo save route to the database press "s" then ENTER.\nTo exit without saving press "e" then ENTER.\n')
-        current_pix = s.split(',')
-        if len(current_pix) == 2:
-            if current_pix[0] in allowed_strings:
-                print('Okay, you want to set LED ' + str(current_pix[0]) + ' to ' + str(current_pix[1])) 
-                col = current_pix[1]
-                if col == 'red' or col == 'green' or col == 'blue':
-                    # push this choice into the lights_list
-                    lights_list.append(Led(current_pix[0],current_pix[1]))
-                    # change this and instead make a setAll function which loops over lights_list and calls set function for each object
-                    setAll(lights_list)
-                elif col == 'off':
-                    for x in lights_list:
-                        if x.position == current_pix[0]:
-                            lights_list.remove(x)
-                    setAll(lights_list)
-        elif current_pix[0] == 'e':
-            pixels.clear()
-            pixels.show()  # Make sure to call show() after changing any pixels!
-            #exit the application
-            quit()
-        elif current_pix[0] == 's': 
-            #save the route to the database
-            save_to_db()
-            pixels.clear()
-            pixels.show()  # Make sure to call show() after changing any pixels!
-            #then quit
-            raw_input('The route was saved to the database. Press the ENTER key to quit the applicaiton.')
-            quit()
-        else:
-            print("I don't understand that command, so I can't set that an LED, save to the database or quit the application. Please try again.")
+    # ---- GET WORKOUT DETAILS FROM USER ----
+
+    num_routes = raw_input("how many routes do you want to do this workout?")
+    low_grade = raw_input("what is the LOWEST 'v' grade you want to do this workout? [just enter a number]")
+    high_grade = raw_input("what is the HIGHEST 'v' grade you want to do this workout? [just enter a number]")
+
+    # check high grade not lower than the low grade
+    grade_check()
+
+    print("\nthanks for that, we are generating your workout...\n")
+
+    # get the routes from the database
+    route_set = read_from_db()
+
+    # if no routes match the users criteria quit
+    if len(route_set) == 0:
+            print("There are no routes that match your request... you'll have to start again... quitting")
+            time.sleep(3)
+            exit()
+
+    # when we got >1 routes but <num requested
+    if len(route_set) < num_routes:
+         print('You asked for ' + str(num_routes) + ' but I could only find ' + str(len(route_set)) + ' in the database, so I will just give you them!\n')
+    

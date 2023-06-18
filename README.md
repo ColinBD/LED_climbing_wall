@@ -105,5 +105,5 @@ In such cases you will need to:
 
 ## License
 
-This project is licensed under the MIT License
+You are free to experiement and use this code as an individual, but you cannot sell or distribute any portion of this code without my express permission. Get in touch if you want to use this commercially.
 
