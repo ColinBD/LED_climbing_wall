@@ -12,7 +12,8 @@ PIXEL_COUNT = 32
 # create a lights list which we can store our lights in
 lights_list = []
 #set up required variable
-current_route_num = 1
+current_route_num = 0
+num_routes_to_climb = 0
 route_set = []
 
 # Helpers
@@ -83,37 +84,12 @@ def setAll(LEDs):
     pixels.show()
 
 
-def brightness_decrease(pixels, wait=0.01, step=1):
-    for j in range(int(256 // step)):
-        for i in range(pixels.count()):
-            r, g, b = pixels.get_pixel_rgb(i)
-            r = int(max(0, r - step))
-            g = int(max(0, g - step))
-            b = int(max(0, b - step))
-            pixels.set_pixel(i, Adafruit_WS2801.RGB_to_color( r, g, b ))
-        pixels.show()
-        if wait > 0:
-            time.sleep(wait)
-
-def appear_from_back(pixels, color=(255, 0, 0)):
-    pos = 0
-    for i in range(pixels.count()):
-        for j in reversed(range(i, pixels.count())):
-            pixels.clear()
-            # first set all pixels at the begin
-            for k in range(i):
-                pixels.set_pixel(k, Adafruit_WS2801.RGB_to_color( color[0], color[1], color[2] ))
-            # set then the pixel at position j
-            pixels.set_pixel(j, Adafruit_WS2801.RGB_to_color( color[0], color[1], color[2] ))
-            pixels.show()
-            time.sleep(0.02)
-
-def read_from_db():
+def read_from_db(num_wanted):
         routes = []
         print('the read from db routine')
         conn = sqlite3.connect('routesDB.db')
         cursor = conn.cursor()
-        sql = "SELECT aroute FROM routes WHERE grade BETWEEN " + low_grade + " AND " + high_grade
+        sql = "SELECT * FROM routes WHERE grade BETWEEN " + low_grade + " AND " + high_grade + " ORDER BY RANDOM()" + " LIMIT " + num_wanted
         i=0
         for row in cursor.execute(sql):
                 #print row
@@ -130,7 +106,9 @@ def grade_check():
                 exit()
         return
 
-def parse_string():
+def parse_string(string):
+        print(string + '\n')
+        raw_input('parsing the string. Press ENTER to continue')
         i=0
         my_string = ''
         for i in lights_list:
@@ -152,7 +130,7 @@ if __name__ == "__main__":
 
     # ---- GET WORKOUT DETAILS FROM USER ----
 
-    num_routes = raw_input("how many routes do you want to do this workout?")
+    num_routes_wanted = raw_input("how many routes do you want to do this workout?")
     low_grade = raw_input("what is the LOWEST 'v' grade you want to do this workout? [just enter a number]")
     high_grade = raw_input("what is the HIGHEST 'v' grade you want to do this workout? [just enter a number]")
 
@@ -162,15 +140,41 @@ if __name__ == "__main__":
     print("\nthanks for that, we are generating your workout...\n")
 
     # get the routes from the database
-    route_set = read_from_db()
+    route_set = read_from_db(num_routes_wanted)
+    num_routes_available = len(route_set)
 
     # if no routes match the users criteria quit
     if len(route_set) == 0:
-            print("There are no routes that match your request... you'll have to start again... quitting")
-            time.sleep(3)
+            raw_input("There are no routes that match your request in the database. You'll have to start again. Press any key to quit")
             exit()
 
     # when we got >1 routes but <num requested
-    if len(route_set) < num_routes:
-         print('You asked for ' + str(num_routes) + ' but I could only find ' + str(len(route_set)) + ' in the database, so I will just give you them!\n')
+    if int(num_routes_available) < int(num_routes_wanted):
+        print('You asked for ' + str(num_routes_wanted) + ' routes but I could only find ' + str(num_routes_available) + ' routes in the database within that grade span, so I will just give you them!\n')
+        num_routes_to_climb = num_routes_available
+    else: 
+        num_routes_to_climb = num_routes_wanted
     
+    # print for debuggin - todo: remove when it's all working well
+    for x in route_set:
+         print(x)
+
+    while current_route_num < num_routes_to_climb:
+    # loop through routes_list presenting them one at a time
+        # present the first route
+        print(str(current_route_num+1) + ' of ' + str(num_routes_to_climb) + '. Grade: A, set on B, success count = C, fail count = D')
+        # TO DO: parse the string first to just get the LEDs string (not the grade data etc.)
+        setAll(route_set[current_route_num])
+        # The user is invited to press 'e' to edit the route (change the grade), 'f' to mark as failed on the route and load next, or 'space bar' to mark as success and load next. 
+        char = raw_input("Press 'e' then ENTER to change the routes grade,\n'f' then ENTER to mark as failed on the route and load next,\n's' then ENTER to mark as success and load next,\nor any other key to load next route without marking success.")
+        if char == 'e':
+            #  change grade then feedback to user
+            print('change grade routine')
+        elif char == 'f':
+            # increment failed column in the database for this route 
+            print('mark as route failed routine')
+        elif char == 's':
+            # increment success column in the database for this route
+            print('mark as route success routine')
+        # load next route
+        current_route_num = current_route_num + 1

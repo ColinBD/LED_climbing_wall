@@ -89,6 +89,8 @@ You don't need to interact further with the database as all reads/writes will be
     .tables /* you should see 'routes' assuming you created the table correctly in the step above */
     SELECT * from routes; /* If you have used set_route.py and saved one or more routes, you should see an output like lines like "1|a1,blue;a3,red;a6,green;|1||0|0" */
 
+You might also like to know "PRAGMA table_info(routes);" /* which lists the columns for the table 'routes'
+
 ## Configuring for your climbing wall environment
 
 The scripts were written for my climbing wall which has 16 rows of holds, with an alternating number of holds on each column; 12 or 11, giving 138 LEDs in total. Unless you wish to build a wall which matches this configuration you will want to modify the code to match your wall. 
