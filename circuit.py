@@ -9,8 +9,6 @@ import Adafruit_GPIO.SPI as SPI
 # Configure the count of pixels:
 PIXEL_COUNT = 32
 
-# create a lights list which we can store our lights in
-lights_list = []
 #set up required variable
 current_route_num = 0
 num_routes_to_climb = 0
@@ -76,17 +74,25 @@ def set(light, color):
     elif color == 'off':
         pixels.set_pixel(string_pos, Adafruit_WS2801.RGB_to_color(0,0,0)) 
 
-def setAll(LEDs):
+def setAll(LEDS):
     pixels.clear()
     pixels.show() 
-    for LED in lights_list:
+    for LED in LEDS:
         set(LED.position, LED.colour)
     pixels.show()
+
+def parse_LED_string(string):
+    lights_list = []
+    string_list = string.split(';')
+    for x in string_list:
+        led_info = x.split(',')
+        if len(led_info) == 2:
+            lights_list.append(Led(led_info[0],led_info[1]))
+    return lights_list
 
 
 def read_from_db(num_wanted):
         routes = []
-        print('the read from db routine')
         conn = sqlite3.connect('routesDB.db')
         cursor = conn.cursor()
         sql = "SELECT * FROM routes WHERE grade BETWEEN " + low_grade + " AND " + high_grade + " ORDER BY RANDOM()" + " LIMIT " + num_wanted
@@ -106,22 +112,6 @@ def grade_check():
                 exit()
         return
 
-def parse_string(string):
-        print(string + '\n')
-        raw_input('parsing the string. Press ENTER to continue')
-        i=0
-        my_string = ''
-        for i in lights_list:
-            my_string = my_string + i.position + ',' + i.colour + ';' 
-        # while i < (len(lights_list) - 1):
-        #         #get the content from lights list and add it to the string var with a comma
-        #         my_string = my_string + lights_list[i] + ';'
-        #         print(my_string)
-        #         i = i + 1
-        print(my_string)
-        raw_input('consider my_string then press ENTER to continue')
-        return my_string
-
 
 if __name__ == "__main__":
     # Clear all the pixels to turn them off.
@@ -130,9 +120,9 @@ if __name__ == "__main__":
 
     # ---- GET WORKOUT DETAILS FROM USER ----
 
-    num_routes_wanted = raw_input("how many routes do you want to do this workout?")
-    low_grade = raw_input("what is the LOWEST 'v' grade you want to do this workout? [just enter a number]")
-    high_grade = raw_input("what is the HIGHEST 'v' grade you want to do this workout? [just enter a number]")
+    num_routes_wanted = raw_input("how many routes do you want to do this workout? ")
+    low_grade = raw_input("what is the LOWEST 'v' grade you want to do this workout? [just enter a number] ")
+    high_grade = raw_input("what is the HIGHEST 'v' grade you want to do this workout? [just enter a number] ")
 
     # check high grade not lower than the low grade
     grade_check()
@@ -159,14 +149,20 @@ if __name__ == "__main__":
     for x in route_set:
          print(x)
 
-    while current_route_num < num_routes_to_climb:
+    while int(current_route_num) < int(num_routes_to_climb):
     # loop through routes_list presenting them one at a time
-        # present the first route
-        print(str(current_route_num+1) + ' of ' + str(num_routes_to_climb) + '. Grade: A, set on B, success count = C, fail count = D')
-        # TO DO: parse the string first to just get the LEDs string (not the grade data etc.)
-        setAll(route_set[current_route_num])
+        # print useful info to console
+        id = str(route_set[current_route_num][0])
+        route = route_set[current_route_num][1]
+        grade = str(route_set[current_route_num][2])
+        successes = str(route_set[current_route_num][4])
+        fails = str(route_set[current_route_num][5])
+        print(str(current_route_num+1) + ' of ' + str(num_routes_to_climb) + '. Grade: V'+ grade + ', success count = ' + successes + ', fail count = ' + fails)
+        print('id = ' + id + '. Route = ' + route)
+        # show the leds
+        setAll(parse_LED_string(route))
         # The user is invited to press 'e' to edit the route (change the grade), 'f' to mark as failed on the route and load next, or 'space bar' to mark as success and load next. 
-        char = raw_input("Press 'e' then ENTER to change the routes grade,\n'f' then ENTER to mark as failed on the route and load next,\n's' then ENTER to mark as success and load next,\nor any other key to load next route without marking success.")
+        char = raw_input("'e' to change the grade; 'f' to mark as failed; 's' to mark as success; any other key to load next route without marking success.")
         if char == 'e':
             #  change grade then feedback to user
             print('change grade routine')
@@ -178,3 +174,9 @@ if __name__ == "__main__":
             print('mark as route success routine')
         # load next route
         current_route_num = current_route_num + 1
+    
+    # all done message - give the number of successes and fails for this session. Perhaps give the time to complete too.
+    print("All done! That's you on the road to being stronger!")
+    # Clear all the pixels to turn them off.
+    pixels.clear()
+    pixels.show()  # Make sure to call show() after changing any pixels!

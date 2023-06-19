@@ -106,9 +106,9 @@ def save_to_db():
         #only save routes with >= 2 holds lit (e.g. a dyno route could be two holds)
         if len(lights_list) > 1:
             grade = raw_input('What is the v grade of the route? (just enter the number)')
+            string = prep_string()
             conn = sqlite3.connect("routesDB.db")
             cursor = conn.cursor()
-            string = prep_string()
             cursor.execute('''INSERT INTO routes(route, grade, complete_count, fail_count)
                       VALUES(?,?,?,?)''', (string,grade,0,0))
             conn.commit()
