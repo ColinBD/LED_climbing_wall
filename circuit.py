@@ -5,6 +5,9 @@ import RPi.GPIO as GPIO
 import Adafruit_WS2801
 import Adafruit_GPIO.SPI as SPI
 
+# database setup
+db = 'routesDB.db'
+table = 'routes'
 
 # Configure the count of pixels:
 PIXEL_COUNT = 32
@@ -92,25 +95,35 @@ def parse_LED_string(string):
 
 
 def read_from_db(num_wanted):
-        routes = []
-        conn = sqlite3.connect('routesDB.db')
-        cursor = conn.cursor()
-        sql = "SELECT * FROM routes WHERE grade BETWEEN " + low_grade + " AND " + high_grade + " ORDER BY RANDOM()" + " LIMIT " + num_wanted
-        i=0
-        for row in cursor.execute(sql):
-                #print row
-                routes.append(row)
-                i = i+1
-        conn.close()
-        return routes
+    routes = []
+    conn = sqlite3.connect('routesDB.db')
+    cursor = conn.cursor()
+    sql = "SELECT * FROM " + table + " WHERE grade BETWEEN " + low_grade + " AND " + high_grade + " ORDER BY RANDOM()" + " LIMIT " + num_wanted
+    i=0
+    for row in cursor.execute(sql):
+            #print row
+            routes.append(row)
+            i = i+1
+    conn.close()
+    return routes
+ 
+def update_grade(route_id, grade):
+    conn = sqlite3.connect(db)
+    cursor = conn.cursor()
+    # UPDATE routes SET grade = 9 WHERE id = 1;
+    sql = "UPDATE " + table + " SET grade = " + grade + " WHERE id = " + route_id + ";"
+    cursor.execute(sql)
+    conn.commit()
+    conn.close()
+
 
 # ensure low grade is not higher than high grade
 def grade_check():
-        if int(high_grade) < int(low_grade):
-                print ("high/low grade mismatch... you'll have to start again!... exiting program...")
-                time.sleep(2)
-                exit()
-        return
+    if int(high_grade) < int(low_grade):
+        print ("high/low grade mismatch... you'll have to start again!... exiting program...")
+        time.sleep(2)
+        exit()
+    return
 
 
 if __name__ == "__main__":
@@ -152,20 +165,24 @@ if __name__ == "__main__":
     while int(current_route_num) < int(num_routes_to_climb):
     # loop through routes_list presenting them one at a time
         # print useful info to console
-        id = str(route_set[current_route_num][0])
+        route_id = str(route_set[current_route_num][0])
         route = route_set[current_route_num][1]
         grade = str(route_set[current_route_num][2])
         successes = str(route_set[current_route_num][4])
         fails = str(route_set[current_route_num][5])
         print(str(current_route_num+1) + ' of ' + str(num_routes_to_climb) + '. Grade: V'+ grade + ', success count = ' + successes + ', fail count = ' + fails)
-        print('id = ' + id + '. Route = ' + route)
+        print('id = ' + route_id + '. Route = ' + route)
         # show the leds
         setAll(parse_LED_string(route))
         # The user is invited to press 'e' to edit the route (change the grade), 'f' to mark as failed on the route and load next, or 'space bar' to mark as success and load next. 
         char = raw_input("'e' to change the grade; 'f' to mark as failed; 's' to mark as success; any other key to load next route without marking success.")
         if char == 'e':
             #  change grade then feedback to user
-            print('change grade routine')
+            new_grade = raw_input('What do you want to set this routes grade to?')
+            if new_grade == grade:
+                 print("That's the same as the old grade!!!")
+            else: 
+                update_grade(route_id, new_grade)
         elif char == 'f':
             # increment failed column in the database for this route 
             print('mark as route failed routine')
