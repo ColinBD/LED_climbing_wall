@@ -8,12 +8,8 @@ Working scripts are:
 - set_route.py - will let you turn pixels on/off, set their color, add a climbing grade and save the route to a database. Currently, LEDs can be set but not saved to the database.
     - NOTE: You will need to edit this script to change the 'mapper' library. Use create_mapping.py which will walk you through creating a mapper dictionary, then output it to the screen. You can copy this then paste it into set_route.py in place of the default mapper dictionary.
     - NOTE2: Line 10 of the script sets PIXEL_COUNT = 32, i.e. it assumes there are 32 LEDs in your string. If you have more (which you probably do) set this number as appropriate.
-
-
-The following scripts are being worked on and are not fully functional:
-- circuit.py - you choose a grade range, the number of climbs you want to do, whether you want to do symetrical versions, and then the routes will be presented via the LEDs and the grade is output to the console along with the progress through the set, the date of setting, and whether it has been completed (e.g. 12 of 20, grade V3, set on 1/1/23, completed = true). The user is invited to press 'e' to edit the route (change the grade), 'f' to mark as failed on the route and load next, or 'space bar' to mark as success and load next.
-        - NOTE: Line 10 of the script sets PIXEL_COUNT = 32, i.e. it assumes there are 32 LEDs in your string. If you have more (which you probably do) set this number as appropriate.
-        - Currently, you cannot record success or failure via this script. It is otherwise functional in that it lights the LEDs to display each route and outputs relevent route info to the console.
+- circuit.py - you choose the number of climbs you want to do a grade range, and then the routes will be presented via the LEDs and the grade is output to the console along with the progress through the set, and success and fail counts. The user is invited to press 'e' to edit the route (change the grade), 'f' to mark as failed on the route and load next, or 's' to mark as success and load next, or any other key to continue without marking success or failure.
+    - NOTE: Line 10 of the script sets PIXEL_COUNT = 32, i.e. it assumes there are 32 LEDs in your string. If you have more (which you probably do) set this number as appropriate.
 
 The following scripts are planned for the near future:
 - remove_routes.py - you enter an LED and all routes using that hold will be removed from the database. This is useful if you are resetting the board.
