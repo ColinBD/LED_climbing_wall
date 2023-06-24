@@ -94,11 +94,11 @@ def parse_LED_string(string):
     return lights_list
 
 
-def read_from_db(num_wanted):
+def read_from_db():
     routes = []
     conn = sqlite3.connect('routesDB.db')
     cursor = conn.cursor()
-    sql = "SELECT * FROM " + table + " WHERE grade BETWEEN " + low_grade + " AND " + high_grade + " ORDER BY RANDOM()" + " LIMIT " + num_wanted
+    sql = "SELECT * FROM " + table + " WHERE complete_count = 0 ORDER BY RANDOM()"
     i=0
     for row in cursor.execute(sql):
             #print row
@@ -131,36 +131,20 @@ if __name__ == "__main__":
 
     # ---- GET WORKOUT DETAILS FROM USER ----
 
-    num_routes_wanted = raw_input("how many routes do you want to do this workout? ")
-    low_grade = raw_input("what is the LOWEST 'v' grade you want to do this workout? [just enter a number] ")
-    high_grade = raw_input("what is the HIGHEST 'v' grade you want to do this workout? [just enter a number] ")
-
-    # check high grade not lower than the low grade
-    grade_check()
-
-    print("\nthanks for that, we are generating your workout...\n")
-
     # get the routes from the database
-    route_set = read_from_db(num_routes_wanted)
-    num_routes_available = len(route_set)
+    route_set = read_from_db()
+    num_routes = len(route_set)
 
     # if no routes match the users criteria quit
     if len(route_set) == 0:
-            raw_input("There are no routes that match your request in the database. You'll have to start again. Press any key to quit")
+            raw_input("There are no projects in the database. You better get setting! Press any key to quit")
             exit()
-
-    # when we got >1 routes but <num requested
-    if int(num_routes_available) < int(num_routes_wanted):
-        print('You asked for ' + str(num_routes_wanted) + ' routes but I could only find ' + str(num_routes_available) + ' routes in the database within that grade span, so I will just give you them!\n')
-        num_routes_to_climb = num_routes_available
-    else: 
-        num_routes_to_climb = num_routes_wanted
     
     # print for debuggin - todo: remove when it's all working well
     for x in route_set:
          print(x)
 
-    while int(current_route_num) < int(num_routes_to_climb):
+    while int(current_route_num) < int(num_routes):
     # loop through routes_list presenting them one at a time
         # print useful info to console
         route_id = str(route_set[current_route_num][0])
@@ -168,7 +152,7 @@ if __name__ == "__main__":
         grade = str(route_set[current_route_num][2])
         successes = str(route_set[current_route_num][4])
         fails = str(route_set[current_route_num][5])
-        print(str(current_route_num+1) + ' of ' + str(num_routes_to_climb) + '. Grade: V'+ grade + ', success count = ' + successes + ', fail count = ' + fails)
+        print(str(current_route_num+1) + ' of ' + str(num_routes) + '. Grade: V'+ grade + ', success count = ' + successes + ', fail count = ' + fails)
         print('id = ' + route_id + '. Route = ' + route)
         # show the leds
         set_all(parse_LED_string(route))
