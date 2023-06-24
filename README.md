@@ -10,11 +10,11 @@ Working scripts are:
     - NOTE2: Line 10 of the script sets PIXEL_COUNT = 32, i.e. it assumes there are 32 LEDs in your string. If you have more (which you probably do) set this number as appropriate.
 - **circuit.py**: *you choose the number of climbs you want to do and a grade range, and then the routes will be presented via the LEDs and the grade is output to the console along with the progress through the set, and success and fail counts. The user is invited to press 'e' to edit the route (change the grade), 'f' to mark as failed on the route and load next, or 's' to mark as success and load next, or any other key to continue without marking success or failure.*
     - NOTE: Line 10 of the script sets PIXEL_COUNT = 32, i.e. it assumes there are 32 LEDs in your string. If you have more (which you probably do) set this number as appropriate.
+- **projects.py**: *present routes that are marked as 'completed = false'. As with circuit.py, you then get the chance to edit the route (keypress 'e') to change the grade, and to mark as 'f' failed or 'space bar' succesfully completed and advance to next route.*
 
 The following scripts are planned for the near future:
 - **remove_routes.py**: *you enter an LED and all routes using that hold will be removed from the database. This is useful if you are resetting the board.*
 - **edit_routes.py**: *you enter an LED and all routes using that LED will be presented sequencially, along with their grade, and date of setting. I.e. console output will look like (1 of 32, grade V1, set 1/1/23, completed = true). As with circuit.py, you then get the chance to edit the route (keypress 'e') to change the grade.*
-- **projects.py**: *present routes that are marked as 'completed = false'. As with circuit.py, you then get the chance to edit the route (keypress 'e') to change the grade, and to mark as 'f' failed or 'space bar' succesfully completed and advance to next route.*
 - **symetrical_circuit.py**: *used for systems boards that are set symetrically. After presenting a route from the database, the next route to climb will be the symetrical twin.*
 
 The following deprecated script should be avoided:
